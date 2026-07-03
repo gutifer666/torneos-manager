@@ -1,0 +1,12 @@
+services:
+  postgres:
+    image: supabase/postgres:17.6.1.008
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./databases:/docker-entrypoint-initdb.d
