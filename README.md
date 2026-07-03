@@ -1,5 +1,19 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Database
+
+This project uses PostgreSQL via Docker Compose.
+
+### Commands
+
+```bash
+npm run db:up    # Start the database service
+npm run db:down  # Stop the database service
+npm run db:init  # Run the initialization script (if not automatically run by Docker)
+```
+
+The database is initialized with the schema defined in `databases/init.sql`.
+
 ## Getting Started
 
 First, run the development server:

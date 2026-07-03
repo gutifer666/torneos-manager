@@ -15,7 +15,7 @@ export class PostgresClient {
     });
   }
 
-  async query<T>(queryText: string, values?: any[]): Promise<T[]> {
+  async query<T>(queryText: string, values?: unknown[]): Promise<T[]> {
     const client = await this.pool.connect();
     try {
       const result = await client.query(queryText, values);
@@ -27,5 +27,9 @@ export class PostgresClient {
 
   async getConnection(): Promise<PoolClient> {
     return await this.pool.connect();
+  }
+
+  async stop(): Promise<void> {
+    await this.pool.end();
   }
 }

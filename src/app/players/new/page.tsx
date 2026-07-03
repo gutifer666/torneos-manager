@@ -51,7 +51,7 @@ export default function NewPlayerPage() {
 				setStatus("error");
 				setMessage(errorData.error || "Error al crear el jugador");
 			}
-		} catch (_error) {
+		} catch {
 			setStatus("error");
 			setMessage("Error de conexión");
 		}
