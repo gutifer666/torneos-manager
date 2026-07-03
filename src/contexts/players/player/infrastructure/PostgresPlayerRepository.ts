@@ -2,6 +2,7 @@ import { Service } from "diod";
 import { Player } from "../domain/Player";
 import { PlayerRepository } from "../domain/PlayerRepository";
 import { PostgresClient } from "../../../shared/infrastructure/postgres/PostgresClient";
+import { PlayerFileNumberAlreadyExists } from "../domain/PlayerFileNumberAlreadyExists";
 
 @Service()
 export class PostgresPlayerRepository extends PlayerRepository {
@@ -30,7 +31,14 @@ export class PostgresPlayerRepository extends PlayerRepository {
       ],
     };
 
-    await this.client.query(query.text, query.values);
+    try {
+      await this.client.query(query.text, query.values);
+    } catch (error) {
+      if ((error as { code?: string }).code === "23505") {
+        throw new PlayerFileNumberAlreadyExists(primitives.fileNumber);
+      }
+      throw error;
+    }
   }
 
   async searchAll(): Promise<Player[]> {

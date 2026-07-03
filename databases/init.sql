@@ -4,13 +4,13 @@ CREATE TABLE IF NOT EXISTS players (
     surname TEXT NOT NULL,
     birth_date DATE NOT NULL,
     dorsal INTEGER NOT NULL,
-    file_number TEXT NOT NULL
+    file_number TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS teams (
     id UUID PRIMARY KEY,
     club_name TEXT NOT NULL,
-    file_number TEXT NOT NULL
+    file_number TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS teams_players (

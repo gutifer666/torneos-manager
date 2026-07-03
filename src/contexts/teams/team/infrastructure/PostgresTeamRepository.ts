@@ -3,6 +3,7 @@ import { Service } from "diod";
 import { PostgresClient } from "../../../shared/infrastructure/postgres/PostgresClient";
 import { Team } from "../domain/Team";
 import { TeamRepository } from "../domain/TeamRepository";
+import { TeamFileNumberAlreadyExists } from "../domain/TeamFileNumberAlreadyExists";
 
 @Service()
 export class PostgresTeamRepository extends TeamRepository {
@@ -38,6 +39,9 @@ export class PostgresTeamRepository extends TeamRepository {
 			await client.query("COMMIT");
 		} catch (e) {
 			await client.query("ROLLBACK");
+			if ((e as { code?: string }).code === "23505") {
+				throw new TeamFileNumberAlreadyExists(primitives.fileNumber);
+			}
 			throw e;
 		} finally {
 			client.release();
