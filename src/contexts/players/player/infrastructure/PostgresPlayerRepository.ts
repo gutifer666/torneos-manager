@@ -32,4 +32,20 @@ export class PostgresPlayerRepository extends PlayerRepository {
 
     await this.client.query(query.text, query.values);
   }
+
+  async searchAll(): Promise<Player[]> {
+    const rows = await this.client.query<{
+      id: string;
+      name: string;
+      surname: string;
+      birthDate: Date;
+      dorsal: number;
+      fileNumber: string;
+    }>("SELECT id, name, surname, birth_date as \"birthDate\", dorsal, file_number as \"fileNumber\" FROM players");
+
+    return rows.map((row) => Player.fromPrimitives({
+      ...row,
+      birthDate: row.birthDate.toISOString(),
+    }));
+  }
 }
