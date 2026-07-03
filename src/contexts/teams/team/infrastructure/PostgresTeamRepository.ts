@@ -17,13 +17,12 @@ export class PostgresTeamRepository extends TeamRepository {
 			await client.query("BEGIN");
 
 			const teamQuery = {
-				text: `INSERT INTO teams (id, name, club_name, file_number)
-					   VALUES ($1, $2, $3, $4)
+				text: `INSERT INTO teams (id, club_name, file_number)
+					   VALUES ($1, $2, $3)
 					   ON CONFLICT (id) DO UPDATE SET
-						 name = EXCLUDED.name,
 						 club_name = EXCLUDED.club_name,
 						 file_number = EXCLUDED.file_number`,
-				values: [primitives.id, primitives.name, primitives.clubName, primitives.fileNumber],
+				values: [primitives.id, primitives.clubName, primitives.fileNumber],
 			};
 			await client.query(teamQuery.text, teamQuery.values);
 

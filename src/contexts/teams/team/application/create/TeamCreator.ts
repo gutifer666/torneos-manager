@@ -22,7 +22,6 @@ export class TeamCreator {
 
 	async run(
 		id: string,
-		name: string,
 		clubName: string,
 		fileNumber: string,
 		players: (string | PlayerInput)[],
@@ -53,7 +52,7 @@ export class TeamCreator {
 			}
 		}
 
-		const team = Team.create(id, name, clubName, fileNumber, playerIds);
+		const team = Team.create(id, clubName, fileNumber, playerIds);
 
 		await this.repository.save(team);
 	}

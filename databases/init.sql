@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS players (
 
 CREATE TABLE IF NOT EXISTS teams (
     id UUID PRIMARY KEY,
-    name TEXT NOT NULL,
     club_name TEXT NOT NULL,
     file_number TEXT NOT NULL
 );

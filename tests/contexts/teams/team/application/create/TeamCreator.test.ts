@@ -15,7 +15,6 @@ describe("TeamCreator", () => {
 
 		await creator.run(
 			primitives.id,
-			primitives.name,
 			primitives.clubName,
 			primitives.fileNumber,
 			primitives.playerIds,
@@ -31,7 +30,6 @@ describe("TeamCreator", () => {
 		const creator = new TeamCreator(repository, playerCreator);
 
 		const id = "team-id";
-		const name = "Team A";
 		const clubName = "Club A";
 		const fileNumber = "FILE-123";
 		const playerInput = {
@@ -43,9 +41,9 @@ describe("TeamCreator", () => {
 			fileNumber: "P-1",
 		};
 
-		await creator.run(id, name, clubName, fileNumber, [playerInput]);
+		await creator.run(id, clubName, fileNumber, [playerInput]);
 
-		const expectedTeam = Team.create(id, name, clubName, fileNumber, ["player-1"]);
+		const expectedTeam = Team.create(id, clubName, fileNumber, ["player-1"]);
 		repository.shouldSave(expectedTeam);
 		expect(playerCreator.run).toHaveBeenCalledWith(
 			"player-1",

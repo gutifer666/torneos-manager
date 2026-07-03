@@ -12,7 +12,6 @@ interface Player {
 
 export default function NewTeamPage() {
 	const [formData, setFormData] = useState({
-		name: "",
 		clubName: "",
 		fileNumber: "",
 	});
@@ -65,7 +64,7 @@ export default function NewTeamPage() {
 			if (response.ok) {
 				setStatus("success");
 				setMessage("Equipo/Club registrado correctamente");
-				setFormData({ name: "", clubName: "", fileNumber: "" });
+				setFormData({ clubName: "", fileNumber: "" });
 				setSelectedPlayerIds([]);
 			} else {
 				const errorData = await response.json();
@@ -84,18 +83,7 @@ export default function NewTeamPage() {
 				<h1 className="text-3xl font-bold mb-6 text-green-800">Registrar Nuevo Club/Equipo</h1>
 				
 				<form onSubmit={handleSubmit} className="space-y-6">
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-						<div>
-							<label className="block text-sm font-medium text-gray-700 font-sans">Nombre del Equipo</label>
-							<input
-								type="text"
-								name="name"
-								value={formData.name}
-								onChange={handleChange}
-								required
-								className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm p-2 border text-black"
-							/>
-						</div>
+					<div className="grid grid-cols-1 gap-4">
 						<div>
 							<label className="block text-sm font-medium text-gray-700 font-sans">Nombre del Club</label>
 							<input

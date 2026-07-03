@@ -6,7 +6,6 @@ export class TeamMother {
 	static create(params?: Partial<TeamPrimitives>): Team {
 		const primitives: TeamPrimitives = {
 			id: faker.string.uuid(),
-			name: faker.company.name(),
 			clubName: faker.company.name(),
 			fileNumber: faker.string.alphanumeric(10),
 			playerIds: [faker.string.uuid(), faker.string.uuid()],
