@@ -45,6 +45,7 @@ docs/
 │   ├── hexagonal-architecture.md
 │   └── thin-api-routes.md
 ├── database/
+│   ├── database-reset-on-schema-change.md
 │   ├── not-null-fields.md
 │   ├── postgres-repositories.md
 │   ├── table-naming-singular-plural-convention.md
