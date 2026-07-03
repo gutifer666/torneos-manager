@@ -46,6 +46,7 @@ docs/
 │   └── thin-api-routes.md
 ├── database/
 │   ├── not-null-fields.md
+│   ├── postgres-repositories.md
 │   ├── table-naming-singular-plural-convention.md
 │   └── text-over-varchar-char-convention.md
 └── testing/
