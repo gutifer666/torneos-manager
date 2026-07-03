@@ -4,6 +4,8 @@
 
 Every project convention must be documented as a standalone Markdown file inside the `docs/` folder, organized by area (`backend/`, `frontend/`, `database/`). Each document follows a fixed structure with these sections in order: Convention, Benefits, Examples (good and bad), Real world examples, and Related agreements.
 
+**All documentation must be written in English**, even if the Web UI text is in another language (e.g., Spanish).
+
 The goal is to provide AI agents and developers with self-contained, discoverable references that require no extra context to understand.
 
 ## 🏆 Benefits
@@ -12,6 +14,7 @@ The goal is to provide AI agents and developers with self-contained, discoverabl
 - New team members find conventions faster through a browsable folder structure.
 - Each doc is independently reviewable in PRs, making convention changes easy to track.
 - The fixed structure ensures consistency and completeness across all documented conventions.
+- Documentation always in English ensures consistency and better collaboration with AI agents and international developers.
 
 ## 👀 Examples
 
@@ -45,6 +48,15 @@ bad example
 ## 🔗 Related agreements
 
 - Links to agreements related to this convention if applies
+```
+
+### ❌ Bad: Convention buried in a monolithic file or written in another language
+
+```markdown
+# 🎯 Registro de casos de uso en la página de inicio
+
+## 💡 Convention
+Cada vez que se cree un nuevo caso de uso...
 ```
 
 ### ❌ Bad: Convention buried in a monolithic file
