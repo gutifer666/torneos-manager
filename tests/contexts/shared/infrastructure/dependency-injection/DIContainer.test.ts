@@ -6,6 +6,8 @@ import { TeamCreator } from "@/contexts/teams/team/application/create/TeamCreato
 import { AllTeamsSearcher } from "@/contexts/teams/team/application/search-all/AllTeamsSearcher";
 import { TournamentCreator } from "@/contexts/tournaments/tournament/application/create/TournamentCreator";
 import { AllTournamentsSearcher } from "@/contexts/tournaments/tournament/application/search-all/AllTournamentsSearcher";
+import { TournamentDetailsSearcher } from "@/contexts/tournaments/tournament/application/search/TournamentDetailsSearcher";
+import { MatchResultUpdater } from "@/contexts/tournaments/tournament/application/update-match/MatchResultUpdater";
 
 describe("DI Container Smoke Test", () => {
 	it("should be able to resolve all registered services", () => {
@@ -15,5 +17,7 @@ describe("DI Container Smoke Test", () => {
 		expect(container.get(AllTeamsSearcher)).toBeDefined();
 		expect(container.get(TournamentCreator)).toBeDefined();
 		expect(container.get(AllTournamentsSearcher)).toBeDefined();
+		expect(container.get(TournamentDetailsSearcher)).toBeDefined();
+		expect(container.get(MatchResultUpdater)).toBeDefined();
 	});
 });

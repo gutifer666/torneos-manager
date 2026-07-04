@@ -57,6 +57,30 @@ export class PostgresTournamentRepository extends TournamentRepository {
 				}
 			}
 
+			// Persist matches
+			if (primitives.matches && primitives.matches.length > 0) {
+				for (const match of primitives.matches) {
+					await client.query(
+						`INSERT INTO matches (id, tournament_id, local_team_id, visitor_team_id, matchday, local_score, visitor_score, status)
+						 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+						 ON CONFLICT (id) DO UPDATE SET
+						   local_score = EXCLUDED.local_score,
+						   visitor_score = EXCLUDED.visitor_score,
+						   status = EXCLUDED.status`,
+						[
+							match.id,
+							match.tournamentId,
+							match.localTeamId,
+							match.visitorTeamId,
+							match.matchday,
+							match.localScore,
+							match.visitorScore,
+							match.status,
+						]
+					);
+				}
+			}
+
 			await client.query("COMMIT");
 		} catch (error) {
 			await client.query("ROLLBACK");
@@ -73,27 +97,54 @@ export class PostgresTournamentRepository extends TournamentRepository {
 		const tournaments = [];
 
 		for (const row of tournamentsRows) {
-			const teamsQuery = "SELECT team_id FROM tournaments_teams WHERE tournament_id = $1";
-			const teamsRows = await this.client.query<any>(teamsQuery, [row.id]);
-			const participatingTeams = teamsRows.map((teamRow: any) => teamRow.team_id);
-
-			tournaments.push(
-				Tournament.fromPrimitives({
-					id: row.id,
-					name: row.name,
-					description: row.description,
-					category: row.category,
-					startDate: row.start_date,
-					endDate: row.end_date,
-					maxParticipants: row.max_participants,
-					format: row.format,
-					rules: row.rules,
-					status: row.status,
-					participatingTeams,
-				}),
-			);
+			tournaments.push(await this.hydrateTournament(row));
 		}
 
 		return tournaments;
+	}
+
+	async search(id: string): Promise<Tournament | null> {
+		const tournamentQuery = "SELECT * FROM tournaments WHERE id = $1";
+		const tournamentRows = await this.client.query<any>(tournamentQuery, [id]);
+
+		if (tournamentRows.length === 0) {
+			return null;
+		}
+
+		return this.hydrateTournament(tournamentRows[0]);
+	}
+
+	private async hydrateTournament(row: any): Promise<Tournament> {
+		const teamsQuery = "SELECT team_id FROM tournaments_teams WHERE tournament_id = $1";
+		const teamsRows = await this.client.query<any>(teamsQuery, [row.id]);
+		const participatingTeams = teamsRows.map((teamRow: any) => teamRow.team_id);
+
+		const matchesQuery = "SELECT * FROM matches WHERE tournament_id = $1 ORDER BY matchday ASC";
+		const matchesRows = await this.client.query<any>(matchesQuery, [row.id]);
+		const matches = matchesRows.map((matchRow: any) => ({
+			id: matchRow.id,
+			tournamentId: matchRow.tournament_id,
+			localTeamId: matchRow.local_team_id,
+			visitorTeamId: matchRow.visitor_team_id,
+			matchday: matchRow.matchday,
+			localScore: matchRow.local_score,
+			visitorScore: matchRow.visitor_score,
+			status: matchRow.status,
+		}));
+
+		return Tournament.fromPrimitives({
+			id: row.id,
+			name: row.name,
+			description: row.description,
+			category: row.category,
+			startDate: row.start_date,
+			endDate: row.end_date,
+			maxParticipants: row.max_participants,
+			format: row.format,
+			rules: row.rules,
+			status: row.status,
+			participatingTeams,
+			matches,
+		});
 	}
 }

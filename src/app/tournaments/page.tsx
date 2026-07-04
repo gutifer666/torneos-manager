@@ -97,9 +97,12 @@ export default function TournamentsListPage() {
 									</div>
 								</div>
 								<div className="bg-gray-50 p-4 border-t border-gray-100">
-									<button className="w-full text-green-600 text-sm font-bold hover:text-green-800 transition-colors">
+									<Link
+										href={`/tournaments/${tournament.id}`}
+										className="block w-full text-center text-green-600 text-sm font-bold hover:text-green-800 transition-colors"
+									>
 										Ver detalles →
-									</button>
+									</Link>
 								</div>
 							</div>
 						))}

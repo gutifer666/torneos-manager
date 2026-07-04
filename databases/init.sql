@@ -70,3 +70,15 @@ CREATE TABLE IF NOT EXISTS tournaments_teams (
     team_id UUID REFERENCES teams(id),
     PRIMARY KEY (tournament_id, team_id)
 );
+
+CREATE TABLE IF NOT EXISTS matches (
+    id UUID PRIMARY KEY,
+    tournament_id UUID REFERENCES tournaments(id),
+    local_team_id UUID REFERENCES teams(id),
+    visitor_team_id UUID REFERENCES teams(id),
+    matchday INTEGER NOT NULL,
+    local_score INTEGER,
+    visitor_score INTEGER,
+    status TEXT NOT NULL CONSTRAINT chk_matches_status CHECK (status IN ('Scheduled', 'Finished', 'Postponed', 'Cancelled')),
+    CONSTRAINT chk_different_teams CHECK (local_team_id != visitor_team_id)
+);

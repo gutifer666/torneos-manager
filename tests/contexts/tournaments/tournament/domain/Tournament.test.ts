@@ -113,4 +113,62 @@ describe("Tournament", () => {
 		expect(tournament.toPrimitives().name).toBe("name");
 		expect(tournament.toPrimitives().participatingTeams).toEqual(["team1", "team2"]);
 	});
+
+	it("should generate a league schedule with 4 teams", () => {
+		const startDate = new Date();
+		startDate.setDate(startDate.getDate() + 1);
+		const endDate = new Date(startDate);
+		endDate.setDate(endDate.getDate() + 1);
+
+		const tournament = Tournament.create(
+			"id",
+			"name",
+			"description",
+			"category",
+			startDate,
+			endDate,
+			4,
+			"Liga",
+			"Partido único",
+			"Borrador",
+			["team1", "team2", "team3", "team4"]
+		);
+
+		const matchIds = ["m1", "m2", "m3", "m4", "m5", "m6"];
+		const matches = tournament.generateSchedule(matchIds);
+
+		expect(matches).toHaveLength(6);
+		// Each team should play exactly 3 matches in a 4-team round-robin
+		const team1Matches = matches.filter(
+			(m) => m.toPrimitives().localTeamId === "team1" || m.toPrimitives().visitorTeamId === "team1"
+		);
+		expect(team1Matches).toHaveLength(3);
+	});
+
+	it("should generate a knockout schedule with 4 teams (first round)", () => {
+		const startDate = new Date();
+		startDate.setDate(startDate.getDate() + 1);
+		const endDate = new Date(startDate);
+		endDate.setDate(endDate.getDate() + 1);
+
+		const tournament = Tournament.create(
+			"id",
+			"name",
+			"description",
+			"category",
+			startDate,
+			endDate,
+			4,
+			"Eliminación directa",
+			"Partido único",
+			"Borrador",
+			["team1", "team2", "team3", "team4"]
+		);
+
+		const matchIds = ["m1", "m2"];
+		const matches = tournament.generateSchedule(matchIds);
+
+		expect(matches).toHaveLength(2);
+		expect(matches[0].toPrimitives().matchday).toBe(1);
+	});
 });
