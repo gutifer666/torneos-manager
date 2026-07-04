@@ -30,6 +30,26 @@ SELECT
 FROM generate_series(1, 300) AS s(i)
 ON CONFLICT (file_number) DO NOTHING;
 
+INSERT INTO teams (id, club_name, file_number)
+SELECT
+    gen_random_uuid(),
+    'Club ' || i,
+    'T-' || i
+FROM generate_series(1, 20) AS s(i)
+ON CONFLICT (file_number) DO NOTHING;
+
+INSERT INTO teams_players (team_id, player_id)
+SELECT t.id, p.id
+FROM (
+    SELECT id, row_number() OVER () as rn
+    FROM teams
+) t
+JOIN (
+    SELECT id, row_number() OVER () as rn
+    FROM (SELECT id FROM players ORDER BY file_number LIMIT 300) p
+) p ON (p.rn - 1) / 15 + 1 = t.rn
+ON CONFLICT DO NOTHING;
+
 CREATE TABLE IF NOT EXISTS tournaments (
     id UUID PRIMARY KEY,
     name TEXT NOT NULL CONSTRAINT chk_tournaments_name_length CHECK (length(name) <= 100),
