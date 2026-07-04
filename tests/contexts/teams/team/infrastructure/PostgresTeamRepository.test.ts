@@ -13,6 +13,7 @@ describe("PostgresTeamRepository", () => {
 	});
 
 	beforeEach(async () => {
+		await client.query("DELETE FROM tournaments_teams");
 		await client.query("DELETE FROM teams_players");
 		await client.query("DELETE FROM teams");
 	});
