@@ -82,3 +82,37 @@ CREATE TABLE IF NOT EXISTS matches (
     status TEXT NOT NULL CONSTRAINT chk_matches_status CHECK (status IN ('Scheduled', 'Finished', 'Postponed', 'Cancelled')),
     CONSTRAINT chk_different_teams CHECK (local_team_id != visitor_team_id)
 );
+
+CREATE TABLE IF NOT EXISTS match_reports (
+    id UUID PRIMARY KEY,
+    match_id UUID REFERENCES matches(id) NOT NULL,
+    referee_id UUID NOT NULL,
+    status TEXT NOT NULL CONSTRAINT chk_match_reports_status CHECK (status IN ('Draft', 'Submitted')),
+    actual_start_time TIMESTAMPTZ,
+    assistant_names TEXT,
+    extraordinary_incidents TEXT,
+    referee_signature TEXT,
+    original_document_url TEXT
+);
+
+CREATE TABLE IF NOT EXISTS match_lineups (
+    match_id UUID REFERENCES matches(id) NOT NULL,
+    team_id UUID REFERENCES teams(id) NOT NULL,
+    player_file_number TEXT NOT NULL,
+    player_role TEXT NOT NULL CONSTRAINT chk_match_lineups_role CHECK (player_role IN ('Starter', 'Substitute', 'Staff')),
+    PRIMARY KEY (match_id, team_id, player_file_number)
+);
+
+CREATE TABLE IF NOT EXISTS match_incidents (
+    id UUID PRIMARY KEY,
+    match_id UUID REFERENCES matches(id) NOT NULL,
+    type TEXT NOT NULL CONSTRAINT chk_match_incidents_type CHECK (type IN ('Goal', 'Card', 'Substitution')),
+    minute INTEGER NOT NULL,
+    player_file_number TEXT,
+    team_id UUID REFERENCES teams(id) NOT NULL,
+    goal_type TEXT CONSTRAINT chk_match_incidents_goal_type CHECK (goal_type IN ('regular', 'penalty', 'autogol')),
+    card_color TEXT CONSTRAINT chk_match_incidents_card_color CHECK (card_color IN ('yellow', 'red')),
+    card_reason TEXT,
+    player_in_file_number TEXT,
+    player_out_file_number TEXT
+);

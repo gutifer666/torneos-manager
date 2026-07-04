@@ -8,7 +8,7 @@ const updater = container.get(MatchResultUpdater);
 
 export async function PUT(
 	request: Request,
-	{ params }: { params: { id: string; matchId: string } }
+	{ params }: { params: Promise<{ id: string; matchId: string }> }
 ): Promise<NextResponse> {
 	try {
 		const { id, matchId } = await params;

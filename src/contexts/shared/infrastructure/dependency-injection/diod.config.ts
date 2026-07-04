@@ -14,6 +14,9 @@ import { TournamentDetailsSearcher } from "../../../tournaments/tournament/appli
 import { MatchResultUpdater } from "../../../tournaments/tournament/application/update-match/MatchResultUpdater";
 import { TournamentRepository } from "../../../tournaments/tournament/domain/TournamentRepository";
 import { PostgresTournamentRepository } from "../../../tournaments/tournament/infrastructure/PostgresTournamentRepository";
+import { SubmitMatchReport } from "../../../matches/match-reports/application/submit/SubmitMatchReport";
+import { MatchReportRepository } from "../../../matches/match-reports/domain/MatchReportRepository";
+import { PostgresMatchReportRepository } from "../../../matches/match-reports/infrastructure/PostgresMatchReportRepository";
 import { PostgresClient } from "../postgres/PostgresClient";
 
 const builder = new ContainerBuilder();
@@ -37,5 +40,9 @@ builder.registerAndUse(TournamentCreator);
 builder.registerAndUse(AllTournamentsSearcher);
 builder.registerAndUse(TournamentDetailsSearcher);
 builder.registerAndUse(MatchResultUpdater);
+
+// Matches
+builder.register(MatchReportRepository).use(PostgresMatchReportRepository);
+builder.registerAndUse(SubmitMatchReport);
 
 export const container = builder.build();

@@ -1,7 +1,7 @@
 import { Team } from "../../../../../src/contexts/teams/team/domain/Team";
 import { TeamRepository } from "../../../../../src/contexts/teams/team/domain/TeamRepository";
 
-export class MockTeamRepository implements TeamRepository {
+export class MockTeamRepository extends TeamRepository {
 	private readonly mockSave = jest.fn();
 
 	async save(team: Team): Promise<void> {

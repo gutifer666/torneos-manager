@@ -293,8 +293,14 @@ export default function TournamentDetailsPage({ params }: { params: Promise<{ id
 												</button>
 											)}
 
-											<div className="flex-1 text-left pl-4 font-medium text-gray-800">
-												{teams[match.visitorTeamId] || "Cargando..."}
+											<div className="flex-1 text-left pl-4 font-medium text-gray-800 flex items-center justify-between">
+												<span>{teams[match.visitorTeamId] || "Cargando..."}</span>
+												<Link
+													href={`/matches/${match.id}/report`}
+													className="ml-4 text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded border border-blue-200 hover:bg-blue-100 transition-colors"
+												>
+													Reportar Acta
+												</Link>
 											</div>
 										</div>
 									))}

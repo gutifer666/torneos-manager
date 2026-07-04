@@ -6,7 +6,7 @@ import { TournamentDetailsSearcher } from "@/contexts/tournaments/tournament/app
 
 const searcher = container.get(TournamentDetailsSearcher);
 
-export async function GET(_request: Request, { params }: { params: { id: string } }): Promise<NextResponse> {
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }): Promise<NextResponse> {
 	try {
         const { id } = await params;
 		const tournament = await searcher.run(id);

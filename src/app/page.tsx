@@ -13,7 +13,7 @@ export default function Home() {
 			</header>
 
 			<main className="flex-1 flex flex-col items-center justify-center p-8 gap-12">
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full max-w-7xl">
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 w-full max-w-7xl">
 					<Link
 						href="/players/new"
 						className="group flex flex-col items-center p-8 bg-white text-green-900 rounded-2xl shadow-xl transition-all hover:scale-105 hover:bg-green-50"
@@ -55,6 +55,17 @@ export default function Home() {
 						<h2 className="text-2xl font-bold mb-2 text-green-900">Consultar Torneos</h2>
 						<p className="text-center text-green-700">
 							Explora el calendario, resultados y clasificaciones de los torneos activos.
+						</p>
+					</Link>
+
+					<Link
+						href="/tournaments"
+						className="group flex flex-col items-center p-8 bg-white text-green-900 rounded-2xl shadow-xl transition-all hover:scale-105 hover:bg-green-50"
+					>
+						<div className="text-6xl mb-4 group-hover:animate-bounce">📝</div>
+						<h2 className="text-2xl font-bold mb-2 text-green-900">Acta Digital</h2>
+						<p className="text-center text-green-700">
+							Gestiona alineaciones e incidencias de partidos desde el campo de juego.
 						</p>
 					</Link>
 				</div>
