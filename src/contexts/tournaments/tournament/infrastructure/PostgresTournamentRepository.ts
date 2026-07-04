@@ -11,53 +11,89 @@ export class PostgresTournamentRepository extends TournamentRepository {
 
 	async save(tournament: Tournament): Promise<void> {
 		const primitives = tournament.toPrimitives();
-		const query = {
-			text: `INSERT INTO tournaments (id, name, description, category, start_date, end_date, max_participants, format, rules, status)
-				   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-				   ON CONFLICT (id) DO UPDATE SET
-					 name = EXCLUDED.name,
-					 description = EXCLUDED.description,
-					 category = EXCLUDED.category,
-					 start_date = EXCLUDED.start_date,
-					 end_date = EXCLUDED.end_date,
-					 max_participants = EXCLUDED.max_participants,
-					 format = EXCLUDED.format,
-					 rules = EXCLUDED.rules,
-					 status = EXCLUDED.status`,
-			values: [
-				primitives.id,
-				primitives.name,
-				primitives.description,
-				primitives.category,
-				primitives.startDate,
-				primitives.endDate,
-				primitives.maxParticipants,
-				primitives.format,
-				primitives.rules,
-				primitives.status,
-			],
-		};
+		const client = await this.client.getConnection();
+		
+		try {
+			await client.query("BEGIN");
+			
+			const tournamentQuery = {
+				text: `INSERT INTO tournaments (id, name, description, category, start_date, end_date, max_participants, format, rules, status)
+					   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+					   ON CONFLICT (id) DO UPDATE SET
+						 name = EXCLUDED.name,
+						 description = EXCLUDED.description,
+						 category = EXCLUDED.category,
+						 start_date = EXCLUDED.start_date,
+						 end_date = EXCLUDED.end_date,
+						 max_participants = EXCLUDED.max_participants,
+						 format = EXCLUDED.format,
+						 rules = EXCLUDED.rules,
+						 status = EXCLUDED.status`,
+				values: [
+					primitives.id,
+					primitives.name,
+					primitives.description,
+					primitives.category,
+					primitives.startDate,
+					primitives.endDate,
+					primitives.maxParticipants,
+					primitives.format,
+					primitives.rules,
+					primitives.status,
+				],
+			};
 
-		await this.client.query(query.text, query.values);
+			await client.query(tournamentQuery.text, tournamentQuery.values);
+
+			// Delete existing teams and re-insert
+			await client.query("DELETE FROM tournaments_teams WHERE tournament_id = $1", [primitives.id]);
+
+			if (primitives.participatingTeams.length > 0) {
+				for (const teamId of primitives.participatingTeams) {
+					await client.query(
+						"INSERT INTO tournaments_teams (tournament_id, team_id) VALUES ($1, $2)",
+						[primitives.id, teamId]
+					);
+				}
+			}
+
+			await client.query("COMMIT");
+		} catch (error) {
+			await client.query("ROLLBACK");
+			throw error;
+		} finally {
+			client.release();
+		}
 	}
 
 	async searchAll(): Promise<Tournament[]> {
-		const query = "SELECT * FROM tournaments";
-		const rows = await this.client.query<any>(query);
+		const tournamentsQuery = "SELECT * FROM tournaments";
+		const tournamentsRows = await this.client.query<any>(tournamentsQuery);
 
-		return rows.map((row) =>
-			Tournament.fromPrimitives({
-				id: row.id,
-				name: row.name,
-				description: row.description,
-				category: row.category,
-				startDate: row.start_date,
-				endDate: row.end_date,
-				maxParticipants: row.max_participants,
-				format: row.format,
-				rules: row.rules,
-				status: row.status,
-			}),
-		);
+		const tournaments = [];
+
+		for (const row of tournamentsRows) {
+			const teamsQuery = "SELECT team_id FROM tournaments_teams WHERE tournament_id = $1";
+			const teamsRows = await this.client.query<any>(teamsQuery, [row.id]);
+			const participatingTeams = teamsRows.map((teamRow: any) => teamRow.team_id);
+
+			tournaments.push(
+				Tournament.fromPrimitives({
+					id: row.id,
+					name: row.name,
+					description: row.description,
+					category: row.category,
+					startDate: row.start_date,
+					endDate: row.end_date,
+					maxParticipants: row.max_participants,
+					format: row.format,
+					rules: row.rules,
+					status: row.status,
+					participatingTeams,
+				}),
+			);
+		}
+
+		return tournaments;
 	}
 }

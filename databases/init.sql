@@ -64,3 +64,9 @@ CREATE TABLE IF NOT EXISTS tournaments (
     CONSTRAINT chk_tournaments_dates CHECK (start_date < end_date),
     CONSTRAINT chk_tournaments_knockout_even CHECK (format != 'Eliminación directa' OR max_participants % 2 = 0)
 );
+
+CREATE TABLE IF NOT EXISTS tournaments_teams (
+    tournament_id UUID REFERENCES tournaments(id),
+    team_id UUID REFERENCES teams(id),
+    PRIMARY KEY (tournament_id, team_id)
+);

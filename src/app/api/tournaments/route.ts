@@ -32,6 +32,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 		format,
 		rules,
 		status,
+		participatingTeams,
 	} = body;
 
 	try {
@@ -46,6 +47,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 			format,
 			rules,
 			status,
+			participatingTeams || [],
 		);
 		return HttpNextResponse.json({ message: "Tournament created successfully" }, 201);
 	} catch (error) {

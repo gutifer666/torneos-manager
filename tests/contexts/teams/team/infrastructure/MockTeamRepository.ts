@@ -8,6 +8,10 @@ export class MockTeamRepository implements TeamRepository {
 		this.mockSave(team.toPrimitives());
 	}
 
+	async searchAll(): Promise<Team[]> {
+		return [];
+	}
+
 	shouldSave(team: Team): void {
 		expect(this.mockSave).toHaveBeenCalledWith(team.toPrimitives());
 	}

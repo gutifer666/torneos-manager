@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export default function NewTournamentPage() {
@@ -14,13 +14,27 @@ export default function NewTournamentPage() {
 		format: "Liga",
 		rules: "Partido único",
 		status: "Borrador",
+		participatingTeams: [] as string[],
 	});
+	const [availableTeams, setAvailableTeams] = useState<any[]>([]);
 	const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 	const [message, setMessage] = useState("");
+
+	useEffect(() => {
+		fetch("/api/teams")
+			.then((res) => res.json())
+			.then((data) => setAvailableTeams(data))
+			.catch((err) => console.error("Error fetching teams:", err));
+	}, []);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
 		const { name, value } = e.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
+	};
+
+	const handleTeamsChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
+		setFormData((prev) => ({ ...prev, participatingTeams: selectedOptions }));
 	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -53,6 +67,7 @@ export default function NewTournamentPage() {
 					format: "Liga",
 					rules: "Partido único",
 					status: "Borrador",
+					participatingTeams: [],
 				});
 			} else {
 				const errorData = await response.json();
@@ -192,6 +207,24 @@ export default function NewTournamentPage() {
 								<option value="Cancelado">Cancelado</option>
 							</select>
 						</div>
+					</div>
+
+					<div>
+						<label className="block text-sm font-medium text-gray-700 font-sans">Equipos Participantes</label>
+						<select
+							multiple
+							name="participatingTeams"
+							value={formData.participatingTeams}
+							onChange={handleTeamsChange}
+							className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm p-2 border text-black min-h-[150px]"
+						>
+							{availableTeams.map((team) => (
+								<option key={team.id} value={team.id}>
+									{team.clubName} ({team.fileNumber})
+								</option>
+							))}
+						</select>
+						<p className="mt-1 text-xs text-gray-500">Mantén presionado Ctrl (o Cmd) para seleccionar múltiples equipos.</p>
 					</div>
 					
 					<div className="flex gap-4">

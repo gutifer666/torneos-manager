@@ -16,7 +16,8 @@ describe("Tournament", () => {
 				16,
 				"Liga",
 				"Partido único",
-				"Borrador"
+				"Borrador",
+				[]
 			);
 		}).toThrow("The end date must be after the start date");
 	});
@@ -38,7 +39,8 @@ describe("Tournament", () => {
 				15,
 				"Eliminación directa",
 				"Partido único",
-				"Borrador"
+				"Borrador",
+				[]
 			);
 		}).toThrow("The maximum number of participants must be even for knockout format");
 	});
@@ -58,9 +60,33 @@ describe("Tournament", () => {
 				16,
 				"Liga",
 				"Partido único",
-				"Borrador"
+				"Borrador",
+				[]
 			);
 		}).toThrow("The start date cannot be in the past");
+	});
+
+	it("should throw an error if the number of participating teams exceeds max participants", () => {
+		const startDate = new Date();
+		startDate.setDate(startDate.getDate() + 1);
+		const endDate = new Date(startDate);
+		endDate.setDate(endDate.getDate() + 1);
+
+		expect(() => {
+			Tournament.create(
+				"id",
+				"name",
+				"description",
+				"category",
+				startDate,
+				endDate,
+				2,
+				"Liga",
+				"Partido único",
+				"Borrador",
+				["team1", "team2", "team3"]
+			);
+		}).toThrow("The maximum number of participants (2) has been exceeded");
 	});
 
 	it("should create a valid tournament", () => {
@@ -79,10 +105,12 @@ describe("Tournament", () => {
 			16,
 			"Liga",
 			"Partido único",
-			"Borrador"
+			"Borrador",
+			["team1", "team2"]
 		);
 
 		expect(tournament).toBeInstanceOf(Tournament);
 		expect(tournament.toPrimitives().name).toBe("name");
+		expect(tournament.toPrimitives().participatingTeams).toEqual(["team1", "team2"]);
 	});
 });

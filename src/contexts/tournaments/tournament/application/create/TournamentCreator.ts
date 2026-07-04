@@ -17,6 +17,7 @@ export class TournamentCreator {
 		format: string,
 		rules: string,
 		status: string,
+		participatingTeams: string[],
 	): Promise<void> {
 		const tournament = Tournament.create(
 			id,
@@ -29,6 +30,7 @@ export class TournamentCreator {
 			format,
 			rules,
 			status,
+			participatingTeams,
 		);
 
 		await this.repository.save(tournament);

@@ -5,6 +5,7 @@ import { AllPlayersSearcher } from "../../../players/player/application/search-a
 import { PlayerRepository } from "../../../players/player/domain/PlayerRepository";
 import { PostgresPlayerRepository } from "../../../players/player/infrastructure/PostgresPlayerRepository";
 import { TeamCreator } from "../../../teams/team/application/create/TeamCreator";
+import { AllTeamsSearcher } from "../../../teams/team/application/search-all/AllTeamsSearcher";
 import { TeamRepository } from "../../../teams/team/domain/TeamRepository";
 import { PostgresTeamRepository } from "../../../teams/team/infrastructure/PostgresTeamRepository";
 import { TournamentCreator } from "../../../tournaments/tournament/application/create/TournamentCreator";
@@ -26,6 +27,7 @@ builder.registerAndUse(AllPlayersSearcher);
 // Teams
 builder.register(TeamRepository).use(PostgresTeamRepository);
 builder.registerAndUse(TeamCreator);
+builder.registerAndUse(AllTeamsSearcher);
 
 // Tournaments
 builder.register(TournamentRepository).use(PostgresTournamentRepository);

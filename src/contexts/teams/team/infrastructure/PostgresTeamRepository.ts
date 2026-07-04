@@ -47,4 +47,28 @@ export class PostgresTeamRepository extends TeamRepository {
 			client.release();
 		}
 	}
+
+	async searchAll(): Promise<Team[]> {
+		const teamsQuery = "SELECT * FROM teams";
+		const teamsRows = await this.client.query<any>(teamsQuery);
+
+		const teams = [];
+
+		for (const row of teamsRows) {
+			const playersQuery = "SELECT player_id FROM teams_players WHERE team_id = $1";
+			const playersRows = await this.client.query<any>(playersQuery, [row.id]);
+			const playerIds = playersRows.map((playerRow: any) => playerRow.player_id);
+
+			teams.push(
+				Team.fromPrimitives({
+					id: row.id,
+					clubName: row.club_name,
+					fileNumber: row.file_number,
+					playerIds,
+				}),
+			);
+		}
+
+		return teams;
+	}
 }

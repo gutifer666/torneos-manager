@@ -11,6 +11,7 @@ export interface TournamentPrimitives {
 	format: string;
 	rules: string;
 	status: string;
+	participatingTeams: string[];
 }
 
 export class Tournament extends AggregateRoot {
@@ -25,10 +26,12 @@ export class Tournament extends AggregateRoot {
 		private readonly format: string,
 		private readonly rules: string,
 		private readonly status: string,
+		private readonly participatingTeams: string[],
 	) {
 		super();
 		this.ensureDatesAreValid(startDate, endDate);
 		this.ensureMaxParticipantsIsEvenForKnockout(format, maxParticipants);
+		this.ensureMaxParticipantsIsNotExceeded(maxParticipants, participatingTeams.length);
 	}
 
 	static create(
@@ -42,6 +45,7 @@ export class Tournament extends AggregateRoot {
 		format: string,
 		rules: string,
 		status: string,
+		participatingTeams: string[],
 	): Tournament {
 		if (startDate < new Date()) {
 			throw new Error("The start date cannot be in the past");
@@ -58,6 +62,7 @@ export class Tournament extends AggregateRoot {
 			format,
 			rules,
 			status,
+			participatingTeams,
 		);
 	}
 
@@ -73,6 +78,12 @@ export class Tournament extends AggregateRoot {
 		}
 	}
 
+	private ensureMaxParticipantsIsNotExceeded(maxParticipants: number, currentParticipants: number): void {
+		if (currentParticipants > maxParticipants) {
+			throw new Error(`The maximum number of participants (${maxParticipants}) has been exceeded`);
+		}
+	}
+
 	static fromPrimitives(primitives: TournamentPrimitives): Tournament {
 		return new Tournament(
 			primitives.id,
@@ -85,6 +96,7 @@ export class Tournament extends AggregateRoot {
 			primitives.format,
 			primitives.rules,
 			primitives.status,
+			primitives.participatingTeams || [],
 		);
 	}
 
@@ -100,6 +112,7 @@ export class Tournament extends AggregateRoot {
 			format: this.format,
 			rules: this.rules,
 			status: this.status,
+			participatingTeams: this.participatingTeams,
 		};
 	}
 }
