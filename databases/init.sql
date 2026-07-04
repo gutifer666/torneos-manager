@@ -19,6 +19,17 @@ CREATE TABLE IF NOT EXISTS teams_players (
     PRIMARY KEY (team_id, player_id)
 );
 
+INSERT INTO players (id, name, surname, birth_date, dorsal, file_number)
+SELECT 
+    gen_random_uuid(),
+    'Jugador ' || i,
+    'Apellido ' || i,
+    '1990-01-01'::date + (i || ' days')::interval,
+    i,
+    'F-' || i
+FROM generate_series(1, 300) AS s(i)
+ON CONFLICT (file_number) DO NOTHING;
+
 CREATE TABLE IF NOT EXISTS tournaments (
     id UUID PRIMARY KEY,
     name TEXT NOT NULL CONSTRAINT chk_tournaments_name_length CHECK (length(name) <= 100),
