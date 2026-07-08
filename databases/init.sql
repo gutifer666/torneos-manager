@@ -35,7 +35,7 @@ SELECT
     '1990-01-01'::date + (i || ' days')::interval,
     i,
     'F-' || i
-FROM generate_series(1, 300) AS s(i)
+FROM generate_series(1, 600) AS s(i)
 ON CONFLICT (file_number) DO NOTHING;
 
 INSERT INTO teams (id, club_name, file_number)
@@ -43,7 +43,7 @@ SELECT
     gen_random_uuid(),
     'Club ' || i,
     'T-' || i
-FROM generate_series(1, 20) AS s(i)
+FROM generate_series(1, 40) AS s(i)
 ON CONFLICT (file_number) DO NOTHING;
 
 INSERT INTO teams_players (team_id, player_id)
@@ -54,7 +54,7 @@ FROM (
 ) t
 JOIN (
     SELECT id, row_number() OVER () as rn
-    FROM (SELECT id FROM players ORDER BY file_number LIMIT 300) p
+    FROM (SELECT id FROM players ORDER BY file_number LIMIT 600) p
 ) p ON (p.rn - 1) / 15 + 1 = t.rn
 ON CONFLICT DO NOTHING;
 
@@ -124,3 +124,27 @@ CREATE TABLE IF NOT EXISTS match_incidents (
     player_in_file_number TEXT,
     player_out_file_number TEXT
 );
+
+INSERT INTO tournaments (id, name, description, category, start_date, end_date, max_participants, format, rules, status)
+VALUES 
+    (gen_random_uuid(), 'Liga Regional 2026', 'Liga de 8 equipos con ida y vuelta', 'Senior', '2026-08-01 10:00:00+00', '2026-12-20 22:00:00+00', 8, 'Liga', 'Ida y vuelta', 'Inscripción Abierta'),
+    (gen_random_uuid(), 'Copa Eliminatoria', 'Torneo de eliminación directa para 16 equipos', 'Senior', '2026-09-15 09:00:00+00', '2026-10-15 20:00:00+00', 16, 'Eliminación directa', 'Partido único', 'Inscripción Abierta')
+ON CONFLICT (id) DO NOTHING;
+
+-- Asociar equipos a la Liga Regional 2026 (8 equipos: T-1 a T-8)
+INSERT INTO tournaments_teams (tournament_id, team_id)
+SELECT 
+    (SELECT id FROM tournaments WHERE name = 'Liga Regional 2026' LIMIT 1),
+    id
+FROM teams
+WHERE file_number IN ('T-1', 'T-2', 'T-3', 'T-4', 'T-5', 'T-6', 'T-7', 'T-8')
+ON CONFLICT DO NOTHING;
+
+-- Asociar equipos a la Copa Eliminatoria (16 equipos: T-9 a T-24)
+INSERT INTO tournaments_teams (tournament_id, team_id)
+SELECT 
+    (SELECT id FROM tournaments WHERE name = 'Copa Eliminatoria' LIMIT 1),
+    id
+FROM teams
+WHERE file_number IN ('T-9', 'T-10', 'T-11', 'T-12', 'T-13', 'T-14', 'T-15', 'T-16', 'T-17', 'T-18', 'T-19', 'T-20', 'T-21', 'T-22', 'T-23', 'T-24')
+ON CONFLICT DO NOTHING;
