@@ -2,7 +2,19 @@ import "reflect-metadata";
 import { NextResponse } from "next/server";
 import { container } from "@/contexts/shared/infrastructure/dependency-injection/diod.config";
 import { RefereeCreator } from "@/contexts/referees/referee/application/create/RefereeCreator";
+import { RefereeSearcher } from "@/contexts/referees/referee/application/search/RefereeSearcher";
 import { HttpNextResponse } from "@/contexts/shared/infrastructure/http/HttpNextResponse";
+
+export async function GET(): Promise<NextResponse> {
+	try {
+		const searcher = container.get(RefereeSearcher);
+		const referees = await searcher.run();
+
+		return HttpNextResponse.json(referees);
+	} catch (error) {
+		return HttpNextResponse.json({ error: (error as Error).message }, 500);
+	}
+}
 
 export async function POST(request: Request): Promise<NextResponse> {
 	try {

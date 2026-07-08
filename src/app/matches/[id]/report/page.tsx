@@ -32,6 +32,11 @@ interface Tournament {
 	category: string;
 }
 
+interface Referee {
+	id: string;
+	name: string;
+}
+
 export default function MatchReportPage({ params }: { params: Promise<{ id: string }> }) {
 	const { id: matchId } = use(params);
 	const router = useRouter();
@@ -42,6 +47,7 @@ export default function MatchReportPage({ params }: { params: Promise<{ id: stri
 	const [localTeam, setLocalTeam] = useState<Team | null>(null);
 	const [visitorTeam, setVisitorTeam] = useState<Team | null>(null);
 	const [players, setPlayers] = useState<Player[]>([]);
+	const [availableReferees, setAvailableReferees] = useState<Referee[]>([]);
 
 	// Form State
 	const [startTime, setStartTime] = useState("");
@@ -66,21 +72,35 @@ export default function MatchReportPage({ params }: { params: Promise<{ id: stri
 		async function fetchData() {
 			try {
 				const matchRes = await fetch(`/api/matches/${matchId}`);
+				if (!matchRes.ok) {
+					throw new Error("Error al cargar el partido");
+				}
 				const matchData = await matchRes.json();
 				if (matchData.error) throw new Error(matchData.error);
 
 				setMatch(matchData.match);
 				setTournament(matchData.tournament);
 
-				const [teamsRes, playersRes] = await Promise.all([
+				const [teamsRes, playersRes, refereesRes] = await Promise.all([
 					fetch("/api/teams"),
 					fetch("/api/players"),
+					fetch("/api/referees"),
 				]);
+
+				if (!teamsRes.ok) throw new Error("Error al cargar los equipos");
+				if (!playersRes.ok) throw new Error("Error al cargar los jugadores");
+				if (!refereesRes.ok) throw new Error("Error al cargar los árbitros");
 
 				const teamsData = await teamsRes.json();
 				const playersData = await playersRes.json();
+				const refereesData = await refereesRes.json();
+
+				if (!Array.isArray(teamsData) || !Array.isArray(playersData) || !Array.isArray(refereesData)) {
+					throw new Error("Formato de datos inválido recibido de la API");
+				}
 
 				setPlayers(playersData);
+				setAvailableReferees(refereesData);
 				setLocalTeam(teamsData.find((t: Team) => t.id === matchData.match.localTeamId));
 				setVisitorTeam(teamsData.find((t: Team) => t.id === matchData.match.visitorTeamId));
 				
@@ -161,20 +181,25 @@ export default function MatchReportPage({ params }: { params: Promise<{ id: stri
 								<label className="block text-sm font-medium text-gray-700">Hora Real de Inicio</label>
 								<input
 									type="time"
-									className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+									className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border text-black"
 									value={startTime}
 									onChange={(e) => setStartTime(e.target.value)}
 								/>
 							</div>
 							<div>
-								<label className="block text-sm font-medium text-gray-700">Asistentes</label>
-								<textarea
-									className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-									rows={3}
-									placeholder="Nombres de los árbitros asistentes..."
+								<label className="block text-sm font-medium text-gray-700">Asistente</label>
+								<select
+									className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border text-black"
 									value={assistants}
 									onChange={(e) => setAssistants(e.target.value)}
-								></textarea>
+								>
+									<option value="">Selecciona un asistente...</option>
+									{availableReferees.map((r) => (
+										<option key={r.id} value={r.name}>
+											{r.name}
+										</option>
+									))}
+								</select>
 							</div>
 							<button
 								onClick={nextStep}

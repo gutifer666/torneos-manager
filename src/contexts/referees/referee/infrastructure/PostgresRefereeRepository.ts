@@ -38,4 +38,28 @@ export class PostgresRefereeRepository extends RefereeRepository {
       throw error;
     }
   }
+
+  async searchAll(): Promise<Referee[]> {
+    const query = {
+      text: "SELECT * FROM referees",
+    };
+
+    const rows = await this.client.query<{
+      id: string;
+      name: string;
+      collegiate_number: string;
+      email: string;
+      password: string;
+    }>(query.text);
+
+    return rows.map((row) =>
+      Referee.fromPrimitives({
+        id: row.id,
+        name: row.name,
+        collegiateNumber: row.collegiate_number,
+        email: row.email,
+        password: row.password,
+      }),
+    );
+  }
 }
