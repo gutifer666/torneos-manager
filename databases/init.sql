@@ -7,6 +7,14 @@ CREATE TABLE IF NOT EXISTS players (
     file_number TEXT NOT NULL UNIQUE
 );
 
+CREATE TABLE IF NOT EXISTS referees (
+    id UUID PRIMARY KEY,
+    name TEXT NOT NULL,
+    collegiate_number TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS teams (
     id UUID PRIMARY KEY,
     club_name TEXT NOT NULL,

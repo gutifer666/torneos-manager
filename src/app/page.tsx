@@ -68,6 +68,17 @@ export default function Home() {
 							Gestiona alineaciones e incidencias de partidos desde el campo de juego.
 						</p>
 					</Link>
+
+					<Link
+						href="/referees/new"
+						className="group flex flex-col items-center p-8 bg-white text-green-900 rounded-2xl shadow-xl transition-all hover:scale-105 hover:bg-green-50"
+					>
+						<div className="text-6xl mb-4 group-hover:animate-bounce">⚖️</div>
+						<h2 className="text-2xl font-bold mb-2 text-green-900">Registrar Árbitro</h2>
+						<p className="text-center text-green-700">
+							Añade árbitros oficiales para dirigir los encuentros del torneo.
+						</p>
+					</Link>
 				</div>
 
 				<div className="mt-8 text-center max-w-2xl">
