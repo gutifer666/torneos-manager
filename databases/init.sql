@@ -15,6 +15,16 @@ CREATE TABLE IF NOT EXISTS referees (
     password TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS admins (
+    id UUID PRIMARY KEY,
+    username TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL
+);
+
+INSERT INTO admins (id, username, password)
+VALUES ('00000000-0000-0000-0000-000000000000', 'admin', 'admin')
+ON CONFLICT (username) DO NOTHING;
+
 CREATE TABLE IF NOT EXISTS teams (
     id UUID PRIMARY KEY,
     club_name TEXT NOT NULL,

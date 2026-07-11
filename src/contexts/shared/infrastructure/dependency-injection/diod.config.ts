@@ -21,6 +21,10 @@ import { RefereeCreator } from "../../../referees/referee/application/create/Ref
 import { RefereeSearcher } from "../../../referees/referee/application/search/RefereeSearcher";
 import { RefereeRepository } from "../../../referees/referee/domain/RefereeRepository";
 import { PostgresRefereeRepository } from "../../../referees/referee/infrastructure/PostgresRefereeRepository";
+import { Authenticator } from "../../../auth/user/application/Authenticator";
+import { UserFinder } from "../../../auth/user/application/UserFinder";
+import { UserRepository } from "../../../auth/user/domain/UserRepository";
+import { PostgresUserRepository } from "../../../auth/user/infrastructure/PostgresUserRepository";
 import { PostgresClient } from "../postgres/PostgresClient";
 
 const builder = new ContainerBuilder();
@@ -53,5 +57,10 @@ builder.registerAndUse(SubmitMatchReport);
 builder.register(RefereeRepository).use(PostgresRefereeRepository);
 builder.registerAndUse(RefereeCreator);
 builder.registerAndUse(RefereeSearcher);
+
+// Auth
+builder.register(UserRepository).use(PostgresUserRepository);
+builder.registerAndUse(Authenticator);
+builder.registerAndUse(UserFinder);
 
 export const container = builder.build();

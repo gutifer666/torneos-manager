@@ -2,8 +2,17 @@
 
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { ProtectedRoute } from "../../components/ProtectedRoute";
 
 export default function NewPlayerPage() {
+	return (
+		<ProtectedRoute allowedRole="ADMIN">
+			<NewPlayerPageContent />
+		</ProtectedRoute>
+	);
+}
+
+function NewPlayerPageContent() {
 	const [formData, setFormData] = useState({
 		name: "",
 		surname: "",

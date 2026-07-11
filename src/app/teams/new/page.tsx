@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { ProtectedRoute } from "../../components/ProtectedRoute";
 
 interface Player {
 	id: string;
@@ -11,6 +12,14 @@ interface Player {
 }
 
 export default function NewTeamPage() {
+	return (
+		<ProtectedRoute allowedRole="ADMIN">
+			<NewTeamPageContent />
+		</ProtectedRoute>
+	);
+}
+
+function NewTeamPageContent() {
 	const [formData, setFormData] = useState({
 		clubName: "",
 		fileNumber: "",

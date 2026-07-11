@@ -2,8 +2,17 @@
 
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { ProtectedRoute } from "../../components/ProtectedRoute";
 
 export default function NewRefereePage() {
+	return (
+		<ProtectedRoute allowedRole="ADMIN">
+			<NewRefereePageContent />
+		</ProtectedRoute>
+	);
+}
+
+function NewRefereePageContent() {
 	const [formData, setFormData] = useState({
 		name: "",
 		collegiateNumber: "",

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../../../AuthContext";
 
 interface Player {
 	id: string;
@@ -40,8 +41,15 @@ interface Referee {
 export default function MatchReportPage({ params }: { params: Promise<{ id: string }> }) {
 	const { id: matchId } = use(params);
 	const router = useRouter();
+	const { user, isLoading: authLoading } = useAuth();
 	const [step, setStep] = useState(1);
 	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		if (!authLoading && (!user || user.role !== "REFEREE")) {
+			router.push("/");
+		}
+	}, [user, authLoading, router]);
 	const [match, setMatch] = useState<Match | null>(null);
 	const [tournament, setTournament] = useState<Tournament | null>(null);
 	const [localTeam, setLocalTeam] = useState<Team | null>(null);
@@ -122,7 +130,7 @@ export default function MatchReportPage({ params }: { params: Promise<{ id: stri
 	const handleSubmit = async () => {
 		const payload = {
 			tournamentId: tournament.id,
-			refereeId: "00000000-0000-0000-0000-000000000000", // Dummy for now
+			refereeId: user?.id || "00000000-0000-0000-0000-000000000000",
 			actualStartTime: new Date().toISOString(), // Use startTime from form
 			assistantNames: assistants,
 			lineups,

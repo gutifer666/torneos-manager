@@ -2,8 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { ProtectedRoute } from "../../components/ProtectedRoute";
 
 export default function NewTournamentPage() {
+	return (
+		<ProtectedRoute allowedRole="ADMIN">
+			<NewTournamentPageContent />
+		</ProtectedRoute>
+	);
+}
+
+function NewTournamentPageContent() {
 	const [formData, setFormData] = useState({
 		name: "",
 		description: "",
